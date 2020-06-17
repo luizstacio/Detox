@@ -110,6 +110,18 @@ class AndroidDriver extends DeviceDriverBase {
     return pid;
   }
 
+  async setPermissions(deviceId, bundleId, permissions) {
+    if (permissions.location) {
+      await this.adb.shell(deviceId, `pm ${permissions.location === 'always' ? 'grant' : 'revoke'} ${bundleId} android.permission.ACCESS_FINE_LOCATION`);
+      await this.adb.shell(deviceId, `am start -n ${bundleId}/.MainActivity`);
+      const pid = await this._queryPID(deviceId, bundleId);
+
+      return pid;
+    }
+
+    return '';
+  }
+
   async deliverPayload(params) {
     const {delayPayload, url} = params;
 
